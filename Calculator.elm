@@ -1,4 +1,8 @@
 import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onInput, onClick)
+import String
+
 
 main =
   Html.program
@@ -11,12 +15,18 @@ main =
 -- MODEL
 type alias Model =
   {
-
+    number1: Int,
+    number2: Int,
+    operation: Operation,
+    result: Int
   }
 
-type Msg =
-  EnteredNumber Int
+type Operation = Addition | Subtraction | Multiplication | Division | Exponent
 
+type Msg =
+  EnteredFirstNumber String
+  | EnteredSecondNumber String
+  | CalculateAnswer Operation
 
 -- SUBSCRIPTIONS
 subscriptions : Model -> Sub Msg
@@ -27,7 +37,7 @@ subscriptions model =
 -- INIT
 init : (Model, Cmd Msg)
 init =
-  (Model , Cmd.none)
+  (Model 0 0 Addition 0, Cmd.none)
 
 
 -- UPDATE
@@ -35,9 +45,21 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   (model, Cmd.none)
 
+-- TODO: Add error handling since this is text
+-- Will require a new message that handles both success and error states (the error state
+-- displaying to the user that the input was invalid)
+
+-- convertStringToInt: String -> Cmd Msg
+-- convertStringToInt: newNumber =
+
+
 -- VIEW
 view: Model -> Html Msg
 view model =
   div [] [
-    text "Hello world!"
+    text "Enter the numbers you want to add:"
+    , input [ type_ "text", placeholder "First number", onInput EnteredFirstNumber ] []
+    , input [ type_ "text", placeholder "Second number", onInput EnteredSecondNumber ] []
+    , button [ onClick (CalculateAnswer Addition) ] [ text "Calculate"]
+    ,text ("The result is " ++ toString (model.result))
   ]
