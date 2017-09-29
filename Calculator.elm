@@ -57,7 +57,7 @@ update msg model =
 
 convertStringToInt: String -> Int
 convertStringToInt newNumber =
-  Result.withDefault 0 (String.toInt newNumber)
+  Result.withDefault 0 (String.toInt newNumber)   -- Default the value to 0 if there's an issue parsing the string into a number
 
 -- VIEW
 view: Model -> Html Msg
