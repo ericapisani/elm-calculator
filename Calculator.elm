@@ -43,15 +43,21 @@ init =
 -- UPDATE
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
-  (model, Cmd.none)
+  case msg of
+    EnteredFirstNumber firstNumber->
+      (model, Cmd.none)
+    EnteredSecondNumber secondNumber ->
+      (model, Cmd.none)
+    CalculateAnswer selectedOperation ->
+      (model, Cmd.none)
 
 -- TODO: Add error handling since this is text
 -- Will require a new message that handles both success and error states (the error state
 -- displaying to the user that the input was invalid)
 
--- convertStringToInt: String -> Cmd Msg
--- convertStringToInt: newNumber =
-
+convertStringToInt: String -> Int
+convertStringToInt newNumber =
+  Result.withDefault 0 (String.toInt newNumber)
 
 -- VIEW
 view: Model -> Html Msg
