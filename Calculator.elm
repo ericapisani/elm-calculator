@@ -2,6 +2,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onClick)
 import String
+import Json.Decode
 
 
 main =
@@ -76,20 +77,35 @@ calculateResult model =
 -- https://stackoverflow.com/questions/39371105/how-to-use-select-dropdown-tag-in-elm-lang
 -- will be of interest in doing this
 
+createViewOption: Operation -> Html Msg
+createViewOption operation =
+  option [ value <| toString operation ] [ text <| toString operation]
+
+targetValueOperationDecoder : Json.Decode.Decoder Operation
+targetValueOperationDecoder =
+  targetValue `Json.Decode.andThen` \val ->
+    case val of
+      "Addition" -> Json.Decode.succeed Addition
+      "Subtraction" -> Json.Decode.succeed Subtraction
+      "Multiplication" -> Json.Decode.succeed Multiplication
+      "Division" -> Json.Decode.succeed Division
+      "Exponent" -> Json.Decode.succeed Exponent
+      _ -> Json.Decode.fail ("Invalid Operation: " ++ val)
+
 
 -- VIEW
 view: Model -> Html Msg
 view model =
   div [] [
-    text "Enter the numbers you want to add:"
+    text "Enter the numbers you want to perform an operation on:"
     , input [ type_ "text", placeholder "First number", onInput EnteredFirstNumber ] []
     , input [ type_ "text", placeholder "Second number", onInput EnteredSecondNumber ] []
-    , select [ ] [
-      option [] [ text "Addition" ]
-      , option []  [text "Subtraction" ]
-      , option [] [ text "Multiplication" ]
-      , option [] [ text "Division" ]
-      , option [] [ text "Exponent" ]
+    , select [ on "change" (Json.Decode.map UpdateOperation targetValueOperationDecoder )] [
+      createViewOption Addition
+      , createViewOption Subtraction
+      , createViewOption Multiplication
+      , createViewOption Division
+      , createViewOption Exponent
     ]
     , button [ onClick (CalculateAnswer) ] [ text "Calculate"]
     ,text ("The result is " ++ toString (model.result))
