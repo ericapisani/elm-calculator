@@ -2,7 +2,6 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onClick)
 import String
-import Json.Decode
 
 
 main =
@@ -72,26 +71,25 @@ calculateResult model =
     _ ->   -- Catch all arg if the operation is not Addition
       0
 
--- TODO/Where I left off:
--- Want to convert the value received from the select menu into the union type
--- https://stackoverflow.com/questions/39371105/how-to-use-select-dropdown-tag-in-elm-lang
--- will be of interest in doing this
-
 createViewOption: Operation -> Html Msg
 createViewOption operation =
   option [ value <| toString operation ] [ text <| toString operation]
 
-targetValueOperationDecoder : Json.Decode.Decoder Operation
-targetValueOperationDecoder =
-  targetValue `Json.Decode.andThen` \val ->
-    case val of
-      "Addition" -> Json.Decode.succeed Addition
-      "Subtraction" -> Json.Decode.succeed Subtraction
-      "Multiplication" -> Json.Decode.succeed Multiplication
-      "Division" -> Json.Decode.succeed Division
-      "Exponent" -> Json.Decode.succeed Exponent
-      _ -> Json.Decode.fail ("Invalid Operation: " ++ val)
-
+dispatchOperationMessage: String -> Msg
+dispatchOperationMessage targetValue =
+  case targetValue of
+    "Addition" ->
+      UpdateOperation Addition
+    "Subtraction" ->
+      UpdateOperation Subtraction
+    "Multiplication" ->
+      UpdateOperation Multiplication
+    "Division" ->
+      UpdateOperation Division
+    "Exponent" ->
+      UpdateOperation Exponent
+    _ ->
+      UpdateOperation Addition
 
 -- VIEW
 view: Model -> Html Msg
@@ -100,7 +98,7 @@ view model =
     text "Enter the numbers you want to perform an operation on:"
     , input [ type_ "text", placeholder "First number", onInput EnteredFirstNumber ] []
     , input [ type_ "text", placeholder "Second number", onInput EnteredSecondNumber ] []
-    , select [ on "change" (Json.Decode.map UpdateOperation targetValueOperationDecoder )] [
+    , select [ onInput dispatchOperationMessage ] [
       createViewOption Addition
       , createViewOption Subtraction
       , createViewOption Multiplication
