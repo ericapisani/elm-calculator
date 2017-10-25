@@ -62,14 +62,25 @@ convertStringToInt: String -> Int
 convertStringToInt newNumber =
   Result.withDefault 0 (String.toInt newNumber)   -- Default the value to 0 if there's an issue parsing the string into a number
 
+
 calculateResult: Model -> Int
 calculateResult model =
   case model.operation of
     Addition ->
       model.number1 + model.number2
 
-    _ ->   -- Catch all arg if the operation is not Addition
-      0
+    Subtraction ->
+      model.number1 - model.number2
+
+    Multiplication ->
+      model.number1 * model.number2
+
+    Division ->
+      model.number1 // model.number2   -- Integer division. Would use '/' for floating point division
+
+    Exponent ->
+      model.number1 ^ model.number2
+
 
 createViewOption: Operation -> Html Msg
 createViewOption operation =
@@ -90,6 +101,7 @@ dispatchOperationMessage targetValue =
       UpdateOperation Exponent
     _ ->
       UpdateOperation Addition
+
 
 -- VIEW
 view: Model -> Html Msg
